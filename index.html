@@ -1,20 +1,95 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AJAX Project</title>
-  <link rel="icon" href="images/favicon.ico">
-  <link rel="stylesheet" href="css/reset.css">
-  <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
-  <header>
-  </header>
-  <main>
-  </main>
-  <script src="js/data.js"></script>
-  <script src="js/main.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FootRanking</title>
+    <link rel="icon" href="images/favicon.ico" />
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>FootRanking</h1>
+      <nav>
+        <button id="teams-tab">Teams</button>
+        <button id="favorites-tab">Favorites</button>
+      </nav>
+    </header>
+    <main>
+      <section id="teams-view" class="active">
+        <div id="teams-container">
+          <div class="team">
+            <div class="team-logo">
+              <img
+                src="https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg"
+                alt="Manchester United" />
+            </div>
+            <div class="team-name">
+              <p>Manchester United</p>
+            </div>
+          </div>
+          <div class="team">
+            <div class="team-logo">
+              <img
+                src="https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg"
+                alt="FC Barcelona" />
+            </div>
+            <div class="team-name">
+              <p>FC Barcelona</p>
+            </div>
+          </div>
+          <div class="team">
+            <div class="team-logo">
+              <img
+                src="https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg"
+                alt="Real Madrid" />
+            </div>
+            <div class="team-name">
+              <p>Real Madrid</p>
+            </div>
+          </div>
+          <div class="team">
+            <div class="team-logo">
+              <img
+                src="https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg"
+                alt="Arsenal" />
+            </div>
+            <div class="team-name">
+              <p>Arsenal</p>
+            </div>
+          </div>
+          <div class="team">
+            <div class="team-logo">
+              <img
+                src="https://upload.wikimedia.org/wikipedia/en/a/a7/Paris_Saint-Germain_F.C..svg"
+                alt="PSG" />
+            </div>
+            <div class="team-name">
+              <p>PSG</p>
+            </div>
+          </div>
+          <div class="team">
+            <div class="team-logo">
+              <img
+                src="https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg"
+                alt="Liverpool" />
+            </div>
+            <div class="team-name">
+              <p>Liverpool</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="details-view">
+        <div id="club-details"></div>
+      </section>
+      <section id="favorites-view">
+        <div id="favorites-container"></div>
+      </section>
+    </main>
+    <script src="js/main.js" type="module"></script>
+    <script src="js/data.js" type="module"></script>
+  </body>
 </html>

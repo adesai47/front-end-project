@@ -1,0 +1,77 @@
+/* styles.css */
+.team {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  text-align: center;
+  cursor: pointer;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.team-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 150px;
+}
+
+.team img {
+  max-width: 100px;
+  height: auto;
+  margin-bottom: 0.5rem;
+}
+
+.team-name {
+  background-color: #e0e0e0;
+  padding: 0.5rem;
+  border-top: 1px solid #ccc;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.team-name p {
+  margin: 0;
+  font-weight: bold;
+}
+
+.team:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#club-details {
+  text-align: center;
+  padding: 1rem;
+  background: #ffeb3b;
+  border-radius: 8px;
+}
+
+#club-details img {
+  max-width: 100px;
+  height: auto;
+  margin-bottom: 1rem;
+}
+
+/*
+
+#back-button {
+  background-color: #f44336;
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+#back-button:hover {
+  background-color: #e53935;
+}
+
+*/

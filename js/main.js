@@ -1,44 +1,30 @@
-import { fetchTeams, Team } from './data';
-
+import { fetchTeams } from './data';
 document.addEventListener('DOMContentLoaded', () => {
-  const teamsTab = document.getElementById('teams-tab') as HTMLButtonElement;
-  const favoritesTab = document.getElementById(
-    'favorites-tab',
-  ) as HTMLButtonElement;
-  const teamsView = document.getElementById('teams-view') as HTMLElement;
-  const detailsView = document.getElementById('details-view') as HTMLElement;
-  const favoritesView = document.getElementById(
-    'favorites-view',
-  ) as HTMLElement;
-  const teamsContainer = document.getElementById(
-    'teams-container',
-  ) as HTMLElement;
-  const clubDetails = document.getElementById('club-details') as HTMLElement;
-  const backButton = document.getElementById(
-    'back-button',
-  ) as HTMLButtonElement;
-
-  const favorites: Team[] = [];
-
+  const teamsTab = document.getElementById('teams-tab');
+  const favoritesTab = document.getElementById('favorites-tab');
+  const teamsView = document.getElementById('teams-view');
+  const detailsView = document.getElementById('details-view');
+  const favoritesView = document.getElementById('favorites-view');
+  const teamsContainer = document.getElementById('teams-container');
+  const clubDetails = document.getElementById('club-details');
+  const backButton = document.getElementById('back-button');
+  const favorites = [];
   teamsTab.addEventListener('click', () => {
     teamsView.classList.add('active');
     detailsView.classList.remove('active');
     favoritesView.classList.remove('active');
   });
-
   favoritesTab.addEventListener('click', () => {
     teamsView.classList.remove('active');
     detailsView.classList.remove('active');
     favoritesView.classList.add('active');
     renderFavorites();
   });
-
   backButton.addEventListener('click', () => {
     teamsView.classList.add('active');
     detailsView.classList.remove('active');
   });
-
-  function renderTeams(teams: Team[]): void {
+  function renderTeams(teams) {
     teamsContainer.innerHTML = '';
     teams.forEach((team) => {
       const teamElement = document.createElement('div');
@@ -55,11 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
       teamsContainer.appendChild(teamElement);
     });
   }
-
-  function renderFavorites(): void {
-    const favoritesContainer = document.getElementById(
-      'favorites-container',
-    ) as HTMLElement;
+  function renderFavorites() {
+    const favoritesContainer = document.getElementById('favorites-container');
     favoritesContainer.innerHTML = '';
     favorites.forEach((team) => {
       const teamElement = document.createElement('div');
@@ -73,8 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
       favoritesContainer.appendChild(teamElement);
     });
   }
-
-  function showTeamDetails(team: Team): void {
+  function showTeamDetails(team) {
     teamsView.classList.remove('active');
     detailsView.classList.add('active');
     clubDetails.innerHTML = `
@@ -82,9 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <img src="${team.WikipediaLogoUrl}" alt="${team.Name}" />
       <button id="add-favorite">Add to Favorites</button>
     `;
-    const addFavoriteButton = document.getElementById(
-      'add-favorite',
-    ) as HTMLButtonElement;
+    const addFavoriteButton = document.getElementById('add-favorite');
     addFavoriteButton.addEventListener('click', () => {
       if (!favorites.includes(team)) {
         favorites.push(team);
@@ -92,7 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-
   fetchTeams().then((teams) => {
     renderTeams(teams);
   });
