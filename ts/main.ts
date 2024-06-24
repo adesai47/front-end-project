@@ -1,99 +1,65 @@
-import { fetchTeams, Team } from './data';
+interface Team {
+  TeamID: number;
+  Name: string;
+  WikipediaLogoUrl: string;
+}
 
-document.addEventListener('DOMContentLoaded', () => {
-  const teamsTab = document.getElementById('teams-tab') as HTMLButtonElement;
-  const favoritesTab = document.getElementById(
-    'favorites-tab',
-  ) as HTMLButtonElement;
-  const teamsView = document.getElementById('teams-view') as HTMLElement;
-  const detailsView = document.getElementById('details-view') as HTMLElement;
-  const favoritesView = document.getElementById(
-    'favorites-view',
-  ) as HTMLElement;
-  const teamsContainer = document.getElementById(
-    'teams-container',
-  ) as HTMLElement;
-  const clubDetails = document.getElementById('club-details') as HTMLElement;
-  const backButton = document.getElementById(
-    'back-button',
-  ) as HTMLButtonElement;
+const teamsContainer: HTMLElement | null =
+  document.getElementById('teams-container');
 
-  const favorites: Team[] = [];
+const eplApiUrl: string =
+  'https://api.sportsdata.io/v4/soccer/scores/json/Teams/EPL?key=d96ee95088b9438aa8c07a785c81b6e9';
+const espApiUrl: string =
+  'https://api.sportsdata.io/v4/soccer/scores/json/Teams/ESP?key=d96ee95088b9438aa8c07a785c81b6e9';
+const frlApiUrl: string =
+  'https://api.sportsdata.io/v4/soccer/scores/json/Teams/FRL1?key=d96ee95088b9438aa8c07a785c81b6e9';
 
-  teamsTab.addEventListener('click', () => {
-    teamsView.classList.add('active');
-    detailsView.classList.remove('active');
-    favoritesView.classList.remove('active');
-  });
+async function fetchTeamLogos(
+  apiUrl: string,
+  filterTeams?: string[],
+): Promise<void> {
+  try {
+    const response: Response = await fetch(apiUrl);
+    const data: Team[] = await response.json();
 
-  favoritesTab.addEventListener('click', () => {
-    teamsView.classList.remove('active');
-    detailsView.classList.remove('active');
-    favoritesView.classList.add('active');
-    renderFavorites();
-  });
+    const filteredTeams = filterTeams
+      ? data.filter((team: Team) => filterTeams.includes(team.Name))
+      : data;
 
-  backButton.addEventListener('click', () => {
-    teamsView.classList.add('active');
-    detailsView.classList.remove('active');
-  });
+    if (teamsContainer) {
+      filteredTeams.forEach((team: Team) => {
+        const teamElement: HTMLElement = document.createElement('div');
+        teamElement.classList.add('team');
 
-  function renderTeams(teams: Team[]): void {
-    teamsContainer.innerHTML = '';
-    teams.forEach((team) => {
-      const teamElement = document.createElement('div');
-      teamElement.className = 'team';
-      teamElement.innerHTML = `
-        <div class="team-logo">
-          <img src="${team.WikipediaLogoUrl}" alt="${team.Name}" />
-        </div>
-        <p>${team.Name}</p>
-      `;
-      teamElement.addEventListener('click', () => {
-        showTeamDetails(team);
+        const teamLogoElement: HTMLElement = document.createElement('div');
+        teamLogoElement.classList.add('team-logo');
+
+        const imgElement: HTMLImageElement = document.createElement('img');
+        imgElement.src = team.WikipediaLogoUrl;
+        imgElement.alt = team.Name;
+        teamLogoElement.appendChild(imgElement);
+
+        const teamNameElement: HTMLElement = document.createElement('div');
+        teamNameElement.classList.add('team-name');
+        teamNameElement.innerHTML = `<p>${team.Name}</p>`;
+
+        teamElement.appendChild(teamLogoElement);
+        teamElement.appendChild(teamNameElement);
+
+        teamsContainer.appendChild(teamElement);
       });
-      teamsContainer.appendChild(teamElement);
-    });
+    }
+  } catch (error) {
+    console.error('Error fetching team logos:', error);
   }
+}
 
-  function renderFavorites(): void {
-    const favoritesContainer = document.getElementById(
-      'favorites-container',
-    ) as HTMLElement;
-    favoritesContainer.innerHTML = '';
-    favorites.forEach((team) => {
-      const teamElement = document.createElement('div');
-      teamElement.className = 'team';
-      teamElement.innerHTML = `
-        <div class="team-logo">
-          <img src="${team.WikipediaLogoUrl}" alt="${team.Name}" />
-        </div>
-        <p>${team.Name}</p>
-      `;
-      favoritesContainer.appendChild(teamElement);
-    });
-  }
+fetchTeamLogos(eplApiUrl, [
+  'Arsenal FC',
+  'Manchester United FC',
+  'Liverpool FC',
+]);
 
-  function showTeamDetails(team: Team): void {
-    teamsView.classList.remove('active');
-    detailsView.classList.add('active');
-    clubDetails.innerHTML = `
-      <h2>${team.Name}</h2>
-      <img src="${team.WikipediaLogoUrl}" alt="${team.Name}" />
-      <button id="add-favorite">Add to Favorites</button>
-    `;
-    const addFavoriteButton = document.getElementById(
-      'add-favorite',
-    ) as HTMLButtonElement;
-    addFavoriteButton.addEventListener('click', () => {
-      if (!favorites.includes(team)) {
-        favorites.push(team);
-        alert(`${team.Name} added to favorites!`);
-      }
-    });
-  }
+fetchTeamLogos(espApiUrl, ['FC Barcelona', 'Real Madrid CF']);
 
-  fetchTeams().then((teams) => {
-    renderTeams(teams);
-  });
-});
+fetchTeamLogos(frlApiUrl, ['Paris Saint-Germain FC']);
