@@ -1,0 +1,36 @@
+/* layout.css */
+
+main {
+  flex: 1;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.hidden {
+  display: none;
+}
+
+section {
+  display: none;
+  width: 100%;
+}
+
+section.active {
+  display: block;
+}
+
+#teams-container,
+#favorites-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  width: 100%;
+}
+
+@media (width <= 600px) {
+  #teams-container,
+  #favorites-container {
+    grid-template-columns: 1fr;
+  }
+}
