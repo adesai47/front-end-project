@@ -11,12 +11,12 @@ main {
   display: none;
 }
 
-section {
+main section {
   display: none;
   width: 100%;
 }
 
-section.active {
+main section.active {
   display: block;
 }
 
