@@ -34,3 +34,42 @@ main section.active {
     grid-template-columns: 1fr;
   }
 }
+
+#logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+#team-logo {
+  max-height: 100px;
+  margin-bottom: 10px;
+}
+
+#starting11-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px; /* Space between players */
+}
+
+.player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.player-jersey {
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.player-name,
+.player-position {
+  margin-top: 5px;
+}

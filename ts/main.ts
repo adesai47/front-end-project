@@ -20,7 +20,9 @@ interface Player {
   CommonName: string;
   Position: string;
   TeamID: number;
+  Jersey: number;
 }
+
 const API_URLS = {
   EPL: 'https://api.sportsdata.io/v4/soccer/scores/json/Teams/EPL',
   ESP: 'https://api.sportsdata.io/v4/soccer/scores/json/Teams/ESP',
@@ -38,6 +40,10 @@ const teamsContainer: HTMLElement | null =
 const starting11Container: HTMLElement | null = document.getElementById(
   'starting11-container',
 );
+const teamLogoElement: HTMLImageElement | null = document.getElementById(
+  'team-logo',
+) as HTMLImageElement;
+const titleElement: HTMLElement | null = document.getElementById('title');
 
 const starting11ApiUrls: { [key: string]: string } = {
   'Arsenal FC':
@@ -68,23 +74,29 @@ async function loadTeams(): Promise<void> {
         const teamElement: HTMLElement = document.createElement('div');
         teamElement.classList.add('team');
         teamElement.addEventListener('click', () => {
-          console.log(`Team clicked: ${team.Name}`);
+          if (teamLogoElement) {
+            teamLogoElement.src = team.WikipediaLogoUrl;
+            teamLogoElement.alt = team.Name;
+          }
+          if (titleElement) {
+            titleElement.textContent = team.Name;
+          }
           loadStarting11(team.Name);
         });
 
-        const teamLogoElement: HTMLElement = document.createElement('div');
-        teamLogoElement.classList.add('team-logo');
+        const teamLogoDivElement: HTMLElement = document.createElement('div');
+        teamLogoDivElement.classList.add('team-logo');
 
         const imgElement: HTMLImageElement = document.createElement('img');
         imgElement.src = team.WikipediaLogoUrl;
         imgElement.alt = team.Name;
-        teamLogoElement.appendChild(imgElement);
+        teamLogoDivElement.appendChild(imgElement);
 
         const teamNameElement: HTMLElement = document.createElement('div');
         teamNameElement.classList.add('team-name');
         teamNameElement.innerHTML = `<p>${team.Name}</p>`;
 
-        teamElement.appendChild(teamLogoElement);
+        teamElement.appendChild(teamLogoDivElement);
         teamElement.appendChild(teamNameElement);
 
         teamsContainer.appendChild(teamElement);
@@ -102,13 +114,13 @@ async function loadStarting11(teamName: string): Promise<void> {
   try {
     const response: Response = await fetch(apiUrl);
     const players: Player[] = await response.json();
-    console.log(`Fetched players for ${teamName}:`, players);
     starting11Container.innerHTML = '';
 
     players.forEach((player: Player) => {
       const playerElement = document.createElement('div');
       playerElement.classList.add('player');
       playerElement.innerHTML = `
+        <div class="player-jersey">#${player.Jersey}</div>
         <div class="player-name">${player.CommonName}</div>
         <div class="player-position">${player.Position}</div>
       `;
@@ -139,7 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function showPage(pageId: string): void {
-  console.log(`Showing page: ${pageId}`);
   const pages = document.querySelectorAll('main section');
   pages.forEach((page) => {
     page.classList.remove('active');
@@ -147,5 +158,13 @@ function showPage(pageId: string): void {
   const activePage = document.getElementById(pageId);
   if (activePage) {
     activePage.classList.add('active');
+  }
+
+  if (pageId === 'teams-view' && teamLogoElement) {
+    teamLogoElement.src = 'images/favicon.ico';
+    teamLogoElement.alt = 'FootRanking';
+    if (titleElement) {
+      titleElement.textContent = 'FootRanking';
+    }
   }
 }

@@ -1,6 +1,27 @@
 'use strict';
+const API_KEY = 'd96ee95088b9438aa8c07a785c81b6e9';
+const TEAM_NAMES = [
+  'Manchester United FC',
+  'FC Barcelona',
+  'Real Madrid CF',
+  'Arsenal FC',
+  'Paris Saint-Germain FC',
+  'Liverpool FC',
+];
+const API_URLS = {
+  EPL: 'https://api.sportsdata.io/v4/soccer/scores/json/Teams/EPL',
+  ESP: 'https://api.sportsdata.io/v4/soccer/scores/json/Teams/ESP',
+  FRL1: 'https://api.sportsdata.io/v4/soccer/scores/json/Teams/FRL1',
+};
+async function fetchTeams(apiUrl) {
+  const response = await fetch(`${apiUrl}?key=${API_KEY}`);
+  const data = await response.json();
+  return data.filter((team) => TEAM_NAMES.includes(team.Name));
+}
 const teamsContainer = document.getElementById('teams-container');
 const starting11Container = document.getElementById('starting11-container');
+const teamLogoElement = document.getElementById('team-logo');
+const titleElement = document.getElementById('title');
 const starting11ApiUrls = {
   'Arsenal FC':
     'https://api.sportsdata.io/v4/soccer/scores/json/PlayersByTeamBasic/EPL/509?key=d96ee95088b9438aa8c07a785c81b6e9',
@@ -28,18 +49,25 @@ async function loadTeams() {
         teamElement.classList.add('team');
         teamElement.addEventListener('click', () => {
           console.log(`Team clicked: ${team.Name}`);
+          if (teamLogoElement) {
+            teamLogoElement.src = team.WikipediaLogoUrl;
+            teamLogoElement.alt = team.Name;
+          }
+          if (titleElement) {
+            titleElement.textContent = team.Name;
+          }
           loadStarting11(team.Name);
         });
-        const teamLogoElement = document.createElement('div');
-        teamLogoElement.classList.add('team-logo');
+        const teamLogoDivElement = document.createElement('div');
+        teamLogoDivElement.classList.add('team-logo');
         const imgElement = document.createElement('img');
         imgElement.src = team.WikipediaLogoUrl;
         imgElement.alt = team.Name;
-        teamLogoElement.appendChild(imgElement);
+        teamLogoDivElement.appendChild(imgElement);
         const teamNameElement = document.createElement('div');
         teamNameElement.classList.add('team-name');
         teamNameElement.innerHTML = `<p>${team.Name}</p>`;
-        teamElement.appendChild(teamLogoElement);
+        teamElement.appendChild(teamLogoDivElement);
         teamElement.appendChild(teamNameElement);
         teamsContainer.appendChild(teamElement);
       });
@@ -60,6 +88,7 @@ async function loadStarting11(teamName) {
       const playerElement = document.createElement('div');
       playerElement.classList.add('player');
       playerElement.innerHTML = `
+        <div class="player-jersey">#${player.Jersey}</div>
         <div class="player-name">${player.CommonName}</div>
         <div class="player-position">${player.Position}</div>
       `;
@@ -92,5 +121,12 @@ function showPage(pageId) {
   const activePage = document.getElementById(pageId);
   if (activePage) {
     activePage.classList.add('active');
+  }
+  if (pageId === 'teams-view' && teamLogoElement) {
+    teamLogoElement.src = 'images/favicon.ico';
+    teamLogoElement.alt = 'FootRanking';
+    if (titleElement) {
+      titleElement.textContent = 'FootRanking';
+    }
   }
 }
