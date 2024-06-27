@@ -1,5 +1,11 @@
 'use strict';
 const API_KEY = 'd96ee95088b9438aa8c07a785c81b6e9';
+const POSITION_MAP = {
+  D: 'Defender',
+  A: 'Attacker',
+  M: 'Midfielder',
+  GK: 'Goalkeeper',
+};
 const TEAM_NAMES = [
   'Manchester United FC',
   'FC Barcelona',
@@ -8,70 +14,108 @@ const TEAM_NAMES = [
   'Paris Saint-Germain FC',
   'Liverpool FC',
 ];
-const API_URLS = {
-  EPL: 'https://api.sportsdata.io/v4/soccer/scores/json/Teams/EPL',
-  ESP: 'https://api.sportsdata.io/v4/soccer/scores/json/Teams/ESP',
-  FRL1: 'https://api.sportsdata.io/v4/soccer/scores/json/Teams/FRL1',
+const COMPETITION_MAP = {
+  'Manchester United FC': 'EPL',
+  'FC Barcelona': 'ESP',
+  'Real Madrid CF': 'ESP',
+  'Arsenal FC': 'EPL',
+  'Paris Saint-Germain FC': 'FRL1',
+  'Liverpool FC': 'EPL',
 };
-const POSITION_MAP = {
-  D: 'Defender',
-  A: 'Attacker',
-  M: 'Midfielder',
-  GK: 'Goalkeeper',
-};
-async function fetchTeams(apiUrl) {
-  const response = await fetch(`${apiUrl}?key=${API_KEY}`);
-  const data = await response.json();
-  return data.filter((team) => TEAM_NAMES.includes(team.Name));
-}
+const API_URLS = [
+  `https://api.sportsdata.io/v4/soccer/scores/json/Teams/EPL?key=${API_KEY}`,
+  `https://api.sportsdata.io/v4/soccer/scores/json/Teams/ESP?key=${API_KEY}`,
+  `https://api.sportsdata.io/v4/soccer/scores/json/Teams/FRL1?key=${API_KEY}`,
+];
 const teamsContainer = document.getElementById('teams-container');
 const starting11Container = document.getElementById('starting11-container');
 const teamLogoElement = document.getElementById('team-logo');
 const titleElement = document.getElementById('title');
-const starting11ApiUrls = {
-  'Arsenal FC':
-    'https://api.sportsdata.io/v4/soccer/scores/json/PlayersByTeamBasic/EPL/509?key=d96ee95088b9438aa8c07a785c81b6e9',
-  'Manchester United FC':
-    'https://api.sportsdata.io/v4/soccer/scores/json/PlayersByTeamBasic/EPL/517?key=d96ee95088b9438aa8c07a785c81b6e9',
-  'Liverpool FC':
-    'https://api.sportsdata.io/v4/soccer/scores/json/PlayersByTeamBasic/EPL/515?key=d96ee95088b9438aa8c07a785c81b6e9',
-  'FC Barcelona':
-    'https://api.sportsdata.io/v4/soccer/scores/json/PlayersByTeamBasic/ESP/559?key=d96ee95088b9438aa8c07a785c81b6e9',
-  'Real Madrid CF':
-    'https://api.sportsdata.io/v4/soccer/scores/json/PlayersByTeamBasic/ESP/605?key=d96ee95088b9438aa8c07a785c81b6e9',
-  'Paris Saint-Germain FC':
-    'https://api.sportsdata.io/v4/soccer/scores/json/PlayersByTeamBasic/FRL1/600?key=d96ee95088b9438aa8c07a785c81b6e9',
-};
+async function fetchTeams() {
+  const promises = API_URLS.map((url) =>
+    fetch(url).then((response) => response.json()),
+  );
+  const results = await Promise.all(promises);
+  const allTeams = results.flat();
+  console.log('All teams from API:', allTeams);
+  return allTeams.filter((team) => TEAM_NAMES.includes(team.Name));
+}
+async function fetchPlayers(competition, teamId) {
+  try {
+    const url = `https://api.sportsdata.io/v4/soccer/scores/json/PlayersByTeamBasic/${competition}/${teamId}?key=${API_KEY}`;
+    console.log('Fetching players from URL:', url);
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    console.log(`Players for team ID ${teamId}:`, data);
+    return data;
+  } catch (error) {
+    console.error('Error fetching players:', error);
+    throw error;
+  }
+}
+function createTeamElement(team) {
+  console.log('Creating team element for:', team);
+  if (team.TeamId === undefined) {
+    console.error('Invalid TeamID:', team.TeamId, 'for team:', team);
+    console.log('Team data:', team);
+    return document.createElement('div');
+  }
+  if (team.Name === undefined) {
+    console.error('Invalid Name:', team.Name, 'for team:', team);
+    console.log('Team data:', team);
+    return document.createElement('div');
+  }
+  if (team.WikipediaLogoUrl === undefined) {
+    console.error(
+      'Invalid WikipediaLogoUrl:',
+      team.WikipediaLogoUrl,
+      'for team:',
+      team,
+    );
+    console.log('Team data:', team);
+    return document.createElement('div'); // Return an empty div to avoid breaking the layout
+  }
+  const teamElement = document.createElement('div');
+  teamElement.classList.add('team');
+  teamElement.dataset.teamId = team.TeamId.toString();
+  teamElement.dataset.competition = COMPETITION_MAP[team.Name];
+  const imgElement = document.createElement('img');
+  imgElement.src = team.WikipediaLogoUrl;
+  imgElement.alt = team.Name;
+  teamElement.appendChild(imgElement);
+  const teamNameElement = document.createElement('p');
+  teamNameElement.textContent = team.Name;
+  teamElement.appendChild(teamNameElement);
+  teamElement.addEventListener('click', () => {
+    console.log(`Team clicked: ${team.Name}, ID: ${team.TeamId}`);
+    if (teamLogoElement) {
+      teamLogoElement.src = team.WikipediaLogoUrl;
+      teamLogoElement.alt = team.Name;
+    }
+    if (titleElement) {
+      titleElement.textContent = team.Name;
+    }
+    const competition = teamElement.dataset.competition;
+    const teamId = teamElement.dataset.teamId;
+    if (competition && teamId) {
+      loadStarting11(competition, teamId);
+    } else {
+      console.error('Missing competition or teamId dataset attributes');
+    }
+  });
+  return teamElement;
+}
 async function loadTeams() {
   try {
-    const teamsEPL = await fetchTeams(API_URLS.EPL);
-    const teamsESP = await fetchTeams(API_URLS.ESP);
-    const teamsFRL1 = await fetchTeams(API_URLS.FRL1);
-    const teams = [...teamsEPL, ...teamsESP, ...teamsFRL1];
+    const teams = await fetchTeams();
+    console.log('Filtered teams:', teams);
     if (teamsContainer) {
       teamsContainer.innerHTML = '';
       teams.forEach((team) => {
-        const teamElement = document.createElement('div');
-        teamElement.classList.add('team');
-        teamElement.innerHTML = `
-          <div class="team-logo">
-            <img src="${team.WikipediaLogoUrl}" alt="${team.Name}">
-          </div>
-          <div class="team-name"><p>${team.Name}</p></div>
-        `;
-        teamElement
-          .querySelector('.team-logo')
-          ?.addEventListener('click', () => {
-            console.log(`Team clicked: ${team.Name}`);
-            if (teamLogoElement) {
-              teamLogoElement.src = team.WikipediaLogoUrl;
-              teamLogoElement.alt = team.Name;
-            }
-            if (titleElement) {
-              titleElement.textContent = team.Name;
-            }
-            loadStarting11(team.Name);
-          });
+        const teamElement = createTeamElement(team);
         teamsContainer.appendChild(teamElement);
       });
     }
@@ -79,22 +123,30 @@ async function loadTeams() {
     console.error('Error loading teams:', error);
   }
 }
-async function loadStarting11(teamName) {
-  const apiUrl = starting11ApiUrls[teamName];
-  if (!apiUrl || !starting11Container) return;
+async function loadStarting11(competition, teamId) {
+  if (!competition || !teamId || !starting11Container) {
+    console.error('Missing competition, teamId, or starting11Container');
+    return;
+  }
   try {
-    const response = await fetch(apiUrl);
-    const players = await response.json();
-    console.log(`Fetched players for ${teamName}:`, players);
+    const players = await fetchPlayers(competition, parseInt(teamId));
     starting11Container.innerHTML = '';
     players.forEach((player) => {
       const playerElement = document.createElement('div');
       playerElement.classList.add('player');
-      playerElement.innerHTML = `
-        <div class="player-jersey">#${player.Jersey}</div>
-        <div class="player-name">${player.CommonName}</div>
-        <div class="player-position">${POSITION_MAP[player.Position] || player.Position}</div>
-      `;
+      const jerseyDiv = document.createElement('div');
+      jerseyDiv.classList.add('player-jersey');
+      jerseyDiv.textContent = `#${player.Jersey}`;
+      const nameDiv = document.createElement('div');
+      nameDiv.classList.add('player-name');
+      nameDiv.textContent = player.CommonName;
+      const positionDiv = document.createElement('div');
+      positionDiv.classList.add('player-position');
+      positionDiv.textContent =
+        POSITION_MAP[player.Position] || player.Position;
+      playerElement.appendChild(jerseyDiv);
+      playerElement.appendChild(nameDiv);
+      playerElement.appendChild(positionDiv);
       starting11Container.appendChild(playerElement);
     });
     showPage('starting11-view');
@@ -116,7 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
   loadTeams();
 });
 function showPage(pageId) {
-  console.log(`Showing page: ${pageId}`);
   const pages = document.querySelectorAll('main section');
   pages.forEach((page) => {
     page.classList.remove('active');
@@ -126,7 +177,7 @@ function showPage(pageId) {
     activePage.classList.add('active');
   }
   if (pageId === 'teams-view' && teamLogoElement) {
-    teamLogoElement.src = '';
+    teamLogoElement.src = ''; // Set to an empty string to hide the logo
     teamLogoElement.alt = 'FootRanking';
     if (titleElement) {
       titleElement.textContent = 'FootRanking';
