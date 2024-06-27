@@ -51,25 +51,33 @@ main section.active {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 20px; /* Space between players */
+  gap: 20px;
 }
 
 .player {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 150px;
+  height: 150px;
   margin: 10px;
   border: 1px solid #ccc;
   padding: 10px;
   border-radius: 5px;
+  box-sizing: border-box;
 }
 
 .player-jersey {
   font-weight: bold;
-  font-size: 1.2em;
+  margin-bottom: 10px;
 }
 
 .player-name,
 .player-position {
   margin-top: 5px;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
 }

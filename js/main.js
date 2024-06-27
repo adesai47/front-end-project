@@ -13,6 +13,11 @@ const API_URLS = {
   ESP: 'https://api.sportsdata.io/v4/soccer/scores/json/Teams/ESP',
   FRL1: 'https://api.sportsdata.io/v4/soccer/scores/json/Teams/FRL1',
 };
+const POSITION_MAP = {
+  D: 'Defender',
+  A: 'Attacker',
+  M: 'Midfielder',
+};
 async function fetchTeams(apiUrl) {
   const response = await fetch(`${apiUrl}?key=${API_KEY}`);
   const data = await response.json();
@@ -47,28 +52,25 @@ async function loadTeams() {
       teams.forEach((team) => {
         const teamElement = document.createElement('div');
         teamElement.classList.add('team');
-        teamElement.addEventListener('click', () => {
-          console.log(`Team clicked: ${team.Name}`);
-          if (teamLogoElement) {
-            teamLogoElement.src = team.WikipediaLogoUrl;
-            teamLogoElement.alt = team.Name;
-          }
-          if (titleElement) {
-            titleElement.textContent = team.Name;
-          }
-          loadStarting11(team.Name);
-        });
-        const teamLogoDivElement = document.createElement('div');
-        teamLogoDivElement.classList.add('team-logo');
-        const imgElement = document.createElement('img');
-        imgElement.src = team.WikipediaLogoUrl;
-        imgElement.alt = team.Name;
-        teamLogoDivElement.appendChild(imgElement);
-        const teamNameElement = document.createElement('div');
-        teamNameElement.classList.add('team-name');
-        teamNameElement.innerHTML = `<p>${team.Name}</p>`;
-        teamElement.appendChild(teamLogoDivElement);
-        teamElement.appendChild(teamNameElement);
+        teamElement.innerHTML = `
+          <div class="team-logo">
+            <img src="${team.WikipediaLogoUrl}" alt="${team.Name}">
+          </div>
+          <div class="team-name"><p>${team.Name}</p></div>
+        `;
+        teamElement
+          .querySelector('.team-logo')
+          ?.addEventListener('click', () => {
+            console.log(`Team clicked: ${team.Name}`);
+            if (teamLogoElement) {
+              teamLogoElement.src = team.WikipediaLogoUrl;
+              teamLogoElement.alt = team.Name;
+            }
+            if (titleElement) {
+              titleElement.textContent = team.Name;
+            }
+            loadStarting11(team.Name);
+          });
         teamsContainer.appendChild(teamElement);
       });
     }
@@ -90,7 +92,7 @@ async function loadStarting11(teamName) {
       playerElement.innerHTML = `
         <div class="player-jersey">#${player.Jersey}</div>
         <div class="player-name">${player.CommonName}</div>
-        <div class="player-position">${player.Position}</div>
+        <div class="player-position">${POSITION_MAP[player.Position] || player.Position}</div>
       `;
       starting11Container.appendChild(playerElement);
     });
@@ -123,7 +125,7 @@ function showPage(pageId) {
     activePage.classList.add('active');
   }
   if (pageId === 'teams-view' && teamLogoElement) {
-    teamLogoElement.src = 'images/favicon.ico';
+    teamLogoElement.src = '';
     teamLogoElement.alt = 'FootRanking';
     if (titleElement) {
       titleElement.textContent = 'FootRanking';
