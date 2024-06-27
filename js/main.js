@@ -17,6 +17,7 @@ const POSITION_MAP = {
   D: 'Defender',
   A: 'Attacker',
   M: 'Midfielder',
+  GK: 'Goalkeeper',
 };
 async function fetchTeams(apiUrl) {
   const response = await fetch(`${apiUrl}?key=${API_KEY}`);

@@ -33,6 +33,7 @@ const POSITION_MAP: { [key: string]: string } = {
   D: 'Defender',
   A: 'Attacker',
   M: 'Midfielder',
+  GK: 'Goalkeeper',
 };
 
 async function fetchTeams(apiUrl: string): Promise<Team[]> {
