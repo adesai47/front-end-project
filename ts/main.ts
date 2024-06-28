@@ -61,7 +61,6 @@ async function fetchTeams(): Promise<Team[]> {
   );
   const results = await Promise.all(promises);
   const allTeams = results.flat();
-  console.log('All teams from API:', allTeams);
   return allTeams.filter((team: Team) => TEAM_NAMES.includes(team.Name));
 }
 
@@ -72,13 +71,11 @@ async function fetchPlayers(
   try {
     const url = `https://api.sportsdata.io/v4/soccer/scores/json/PlayersByTeamBasic/${competition}/${teamId}?key=${API_KEY}`;
 
-    console.log('Fetching players from URL:', url);
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    console.log(`Players for team ID ${teamId}:`, data);
     return data;
   } catch (error) {
     console.error('Error fetching players:', error);
@@ -87,16 +84,12 @@ async function fetchPlayers(
 }
 
 function createTeamElement(team: Team): HTMLElement {
-  console.log('Creating team element for:', team);
-
   if (team.TeamId === undefined) {
     console.error('Invalid TeamID:', team.TeamId, 'for team:', team);
-    console.log('Team data:', team);
     return document.createElement('div');
   }
   if (team.Name === undefined) {
     console.error('Invalid Name:', team.Name, 'for team:', team);
-    console.log('Team data:', team);
     return document.createElement('div');
   }
   if (team.WikipediaLogoUrl === undefined) {
@@ -106,7 +99,6 @@ function createTeamElement(team: Team): HTMLElement {
       'for team:',
       team,
     );
-    console.log('Team data:', team);
     return document.createElement('div'); // Return an empty div to avoid breaking the layout
   }
 
@@ -125,7 +117,6 @@ function createTeamElement(team: Team): HTMLElement {
   teamElement.appendChild(teamNameElement);
 
   teamElement.addEventListener('click', () => {
-    console.log(`Team clicked: ${team.Name}, ID: ${team.TeamId}`);
     if (teamLogoElement) {
       teamLogoElement.src = team.WikipediaLogoUrl;
       teamLogoElement.alt = team.Name;
@@ -148,7 +139,6 @@ function createTeamElement(team: Team): HTMLElement {
 async function loadTeams(): Promise<void> {
   try {
     const teams = await fetchTeams();
-    console.log('Filtered teams:', teams);
     if (teamsContainer) {
       teamsContainer.innerHTML = '';
 
