@@ -4,14 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FootRanking</title>
-    <link rel="icon" href="images/favicon.ico" />
     <link rel="stylesheet" href="css/reset.css" />
     <link rel="stylesheet" href="css/layout.css" />
     <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body>
     <header>
-      <h1>FootRanking</h1>
+      <div id="logo-container">
+        <div>
+          <img id="team-logo" src="" alt="FootRanking" />
+        </div>
+        <h1 id="title">FootRanking</h1>
+      </div>
       <nav>
         <a id="teams-tab">Teams</a>
         <a id="favorites-tab">Favorites</a>
@@ -21,14 +25,10 @@
       <section id="teams-view" class="active">
         <div id="teams-container"></div>
       </section>
-      <section id="details-view">
-        <div id="club-details"></div>
-      </section>
-      <section id="favorites-view">
-        <div id="favorites-container"></div>
+      <section id="starting11-view">
+        <div id="starting11-container"></div>
       </section>
     </main>
     <script src="js/main.js"></script>
-    <script src="js/data.js"></script>
   </body>
 </html>
